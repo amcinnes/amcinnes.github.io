@@ -31,7 +31,9 @@ function preload () {
 function create () {
     cursors = this.input.keyboard.createCursorKeys();
     character = this.physics.add.image(400, 100, 'character');
+    character.setSize(38, 78, true);
     paper = this.physics.add.image(400, 300, 'paper');
+    paper.setSize(70, 50, true);
     this.physics.add.overlap(character, paper, collectPaper, null, this);
     scoreCounter = this.add.text(10, 10, 'Score: 0', { fontFamily: 'Arial', fontSize: 18, color: '#000000' });
 }
