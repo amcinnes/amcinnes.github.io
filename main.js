@@ -18,6 +18,9 @@ var game = new Phaser.Game(config);
 
 var cursors;
 var character;
+var scoreCounter;
+var score = 0;
+
 const CHARACTER_SPEED=200;
 
 function preload () {
@@ -30,6 +33,7 @@ function create () {
     character = this.physics.add.image(400, 100, 'character');
     paper = this.physics.add.image(400, 300, 'paper');
     this.physics.add.overlap(character, paper, collectPaper, null, this);
+    scoreCounter = this.add.text(10, 10, 'Score: 0', { fontFamily: 'Arial', fontSize: 18, color: '#000000' });
 }
 
 function update() {
@@ -53,4 +57,6 @@ function collectPaper(player, paper) {
     var x = Math.random() * 800;
     var y = Math.random() * 600;
     paper.setPosition(x, y);
+    score++;
+    scoreCounter.setText('Score: ' + score);
 }
