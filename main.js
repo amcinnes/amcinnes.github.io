@@ -29,6 +29,7 @@ function create () {
     cursors = this.input.keyboard.createCursorKeys();
     character = this.physics.add.image(400, 100, 'character');
     paper = this.physics.add.image(400, 300, 'paper');
+    this.physics.add.overlap(character, paper, collectPaper, null, this);
 }
 
 function update() {
@@ -43,4 +44,13 @@ function update() {
     } else if (cursors.down.isDown) {
         character.setVelocityY(CHARACTER_SPEED);
     }
+}
+
+function collectPaper(player, paper) {
+    // increment score
+    // change location of paper
+    // TODO confine paper to environment
+    var x = Math.random() * 800;
+    var y = Math.random() * 600;
+    paper.setPosition(x, y);
 }
