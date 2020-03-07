@@ -13,31 +13,6 @@
         </style>
     </head>
     <body>
-        <script>
-            var config = {
-                width: 800,
-                height: 600,
-                physics: {
-                    default: 'arcade',
-                    arcade: {
-                    }
-                },
-                scene: {
-                    preload: preload,
-                    create: create
-                },
-                backgroundColor: 0xffffff
-            };
-
-            var game = new Phaser.Game(config);
-
-            function preload () {
-                this.load.image('character', 'character.png');
-            }
-
-            function create () {
-                var character = this.physics.add.image(400, 100, 'character');
-            }
-        </script>
+        <script src="main.js"></script>
     </body>
 </html>
