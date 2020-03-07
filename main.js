@@ -22,11 +22,13 @@ const CHARACTER_SPEED=200;
 
 function preload () {
     this.load.image('character', 'character.png');
+    this.load.image('paper', 'paper.png');
 }
 
 function create () {
     cursors = this.input.keyboard.createCursorKeys();
     character = this.physics.add.image(400, 100, 'character');
+    paper = this.physics.add.image(400, 300, 'paper');
 }
 
 function update() {
