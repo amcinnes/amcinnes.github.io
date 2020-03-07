@@ -7,6 +7,9 @@
             body {
                 text-align: center;
             }
+            canvas {
+                border: 1px solid black;
+            }
         </style>
     </head>
     <body>
@@ -22,17 +25,18 @@
                 scene: {
                     preload: preload,
                     create: create
-                }
+                },
+                backgroundColor: 0xffffff
             };
 
             var game = new Phaser.Game(config);
 
             function preload () {
-                // load assets
+                this.load.image('character', 'character.png');
             }
 
             function create () {
-                // set up game objects
+                var character = this.physics.add.image(400, 100, 'character');
             }
         </script>
     </body>
