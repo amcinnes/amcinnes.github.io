@@ -20,6 +20,7 @@ var cursors;
 var character;
 var scoreCounter;
 var score = 0;
+var obstacles;
 
 const CHARACTER_SPEED=200;
 
@@ -39,31 +40,23 @@ function preload () {
 function create () {
     cursors = this.input.keyboard.createCursorKeys();
     this.add.image(400, 300, 'background').setScale(1.25);
-    var shelf1 = this.physics.add.image(400, 180, 'shelf1').setImmovable(true);
-    var shelf2 = this.physics.add.image(150, 180, 'shelf2').setImmovable(true);
-    var shelf3 = this.physics.add.image(600, 400, 'shelf3').setImmovable(true);
-    var shelf4 = this.physics.add.image(380, 420, 'shelf4').setImmovable(true);
-    var shelf5 = this.physics.add.image(160, 420, 'shelf5').setImmovable(true);
-    var shelf6 = this.physics.add.image(620, 200, 'shelf5').setImmovable(true);
-    var hwall1 = this.physics.add.image(400, 15, 'hwall').setImmovable(true);
-    var hwall2 = this.physics.add.image(400, 585, 'hwall').setImmovable(true);
-    var vwall1 = this.physics.add.image(15, 300, 'vwall').setImmovable(true);
-    var vwall2 = this.physics.add.image(785, 300, 'vwall').setImmovable(true);
+    obstacles = [
+        this.physics.add.image(400, 180, 'shelf1').setImmovable(true),
+        this.physics.add.image(150, 180, 'shelf2').setImmovable(true),
+        this.physics.add.image(600, 400, 'shelf3').setImmovable(true),
+        this.physics.add.image(380, 420, 'shelf4').setImmovable(true),
+        this.physics.add.image(160, 420, 'shelf5').setImmovable(true),
+        this.physics.add.image(620, 200, 'shelf5').setImmovable(true),
+        this.physics.add.image(400, 15, 'hwall').setImmovable(true),
+        this.physics.add.image(400, 585, 'hwall').setImmovable(true),
+        this.physics.add.image(15, 300, 'vwall').setImmovable(true),
+        this.physics.add.image(785, 300, 'vwall').setImmovable(true)];
     character = this.physics.add.image(200, 100, 'character');
     character.setSize(38, 78, true);
     paper = this.physics.add.image(400, 300, 'paper');
     paper.setSize(70, 50, true);
     this.physics.add.overlap(character, paper, collectPaper, null, this);
-    this.physics.add.collider(character, shelf1);
-    this.physics.add.collider(character, shelf2);
-    this.physics.add.collider(character, shelf3);
-    this.physics.add.collider(character, shelf4);
-    this.physics.add.collider(character, shelf5);
-    this.physics.add.collider(character, shelf6);
-    this.physics.add.collider(character, hwall1);
-    this.physics.add.collider(character, hwall2);
-    this.physics.add.collider(character, vwall1);
-    this.physics.add.collider(character, vwall2);
+    this.physics.add.collider(character, obstacles);
     scoreCounter = this.add.text(6, 3, 'Score: 0', { fontFamily: 'Arial', fontSize: 18, color: '#ffffff' });
 }
 
@@ -82,12 +75,21 @@ function update() {
 }
 
 function collectPaper(player, paper) {
+    // Put paper on one of these lines that doesn't overlap with obstacles
+    // I'd be happy to just create it in any random location that doesn't overlap with obstacles
+    // but can't figure out how to do that easily
+    if (Math.random() >= 0.5) {
+        var xChoices = [65, 280, 510, 725];
+        var x = xChoices[Math.floor(Math.random()*xChoices.length)];
+        var y = Math.random() * (560-40) + 40;
+        paper.setPosition(x, y);
+    } else {
+        var yChoices = [80, 305, 515];
+        var x = Math.random() * (760-40) + 40;
+        var y = yChoices[Math.floor(Math.random()*yChoices.length)];
+        paper.setPosition(x, y);
+    }
     // increment score
-    // change location of paper
-    // TODO confine paper to environment
-    var x = Math.random() * 800;
-    var y = Math.random() * 600;
-    paper.setPosition(x, y);
     score++;
     scoreCounter.setText('Score: ' + score);
 }
