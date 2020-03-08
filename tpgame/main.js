@@ -20,11 +20,17 @@ var scoreCounter;
 var score = 0;
 var obstacles;
 var enemies = [];
-var enemies_per_millisecond = 1/5000;
+var enemies_per_millisecond;
 var dead = false;
 
 const CHARACTER_SPEED=200;
 const ENEMY_SPEED=250;
+
+function setScore(s) {
+    score = s;
+    scoreCounter.setText('Score: ' + score);
+    outroScoreCounter.setText(score);
+}
 
 function preload () {
     this.load.image('character', 'character.png');
@@ -71,25 +77,27 @@ function create () {
     paper.setSize(70, 50, true);
     this.physics.add.overlap(character, paper, collectPaper, null, this);
     this.physics.add.collider(character, obstacles);
-    scoreCounter = this.add.text(6, 3, 'Score: 0', { fontFamily: 'Arial', fontSize: 18, color: '#ffffff' });
+    scoreCounter = this.add.text(6, 3, '', { fontFamily: 'Arial', fontSize: 18, color: '#ffffff' });
 
     var intro = this.add.image(400, 300, 'intro');
     outro = this.add.image(400, 300, 'outro');
     outro.visible = false;
+    outroScoreCounter = this.add.text(275, 155, '0', { fontFamily: 'Arial', fontSize: 30, color: '#000000' });
+    outroScoreCounter.visible = false;
 
-    this.input.keyboard.on('keydown', function (event) {
+    this.input.keyboard.on('keydown_ENTER', function (event) {
         if (!running) {
             running = true;
             intro.visible = false;
             outro.visible = false;
+            outroScoreCounter.visible = false;
             // Prepare the game
             dead = false;
             character.visible = true;
-            enemies_per_millisecond = 0;
+            enemies_per_millisecond = 1/3000;
             placePaper();
             character.setPosition(200, 100);
-            score = 0;
-            scoreCounter.setText('Score: ' + score);
+            setScore(0);
         }
     });
 }
@@ -103,6 +111,7 @@ function update(time, delta) {
                 // after the explosion finishes
                 running = false;
                 outro.visible = true;
+                outroScoreCounter.visible = true;
                 // delete all the enemies
                 for (var i=0; i<enemies.length; i++) {
                     enemies[i].obj.destroy();
@@ -171,8 +180,7 @@ function choose_y() {
 
 function collectPaper(player, paper) {
     placePaper();
-    score++;
-    scoreCounter.setText('Score: ' + score);
+    setScore(score + 1);
 }
 
 function placePaper() {
