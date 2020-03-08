@@ -33,6 +33,7 @@ var obstacles;
 var enemies = [];
 var enemies_per_millisecond;
 var dead = false;
+var pointer = null;
 
 const CHARACTER_SPEED=200;
 const ENEMY_SPEED=250;
@@ -97,7 +98,13 @@ function create () {
     outroScoreCounter.visible = false;
 
     this.input.keyboard.on('keydown_ENTER', startGame);
-    this.input.on('pointerdown', startGame);
+    this.input.on('pointerdown', function(p) {
+      pointer = p;
+      startGame()
+    });
+    this.input.on('pointerup', function() {
+      pointer = null;
+    });
 }
 
 function startGame(event) {
@@ -143,6 +150,19 @@ function update(time, delta) {
                 character.setVelocityY(-CHARACTER_SPEED);
             } else if (cursors.down.isDown) {
                 character.setVelocityY(CHARACTER_SPEED);
+            }
+            if (pointer) {
+              var M = 10;
+              if (pointer.x < character.x - M) {
+                character.setVelocityX(-CHARACTER_SPEED);
+              } else if (pointer.x > character.x + M) {
+                character.setVelocityX(CHARACTER_SPEED);
+              }
+              if (pointer.y < character.y - M) {
+                character.setVelocityY(-CHARACTER_SPEED);
+              } else if (pointer.y > character.y + M) {
+                character.setVelocityY(CHARACTER_SPEED);
+              }
             }
         }
     }
