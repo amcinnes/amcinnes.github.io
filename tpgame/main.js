@@ -42,6 +42,7 @@ function preload () {
     this.load.image('enemy_l', 'enemy_l.png');
     this.load.image('enemy_r', 'enemy_r.png');
     this.load.image('enemy_d', 'enemy_d.png');
+    this.load.spritesheet('explosion', 'explosion.png', { frameWidth: 64, frameHeight: 64, endFrame: 23 });
 }
 
 function create () {
@@ -58,6 +59,12 @@ function create () {
         this.physics.add.image(400, 585, 'hwall').setImmovable(true),
         this.physics.add.image(15, 300, 'vwall').setImmovable(true),
         this.physics.add.image(785, 300, 'vwall').setImmovable(true)];
+
+    this.anims.create({
+        key: 'explode',
+        frames: this.anims.generateFrameNumbers('explosion', { start: 0, end: 23, first: 23 }),
+        frameRate: 15
+    });
     character = this.physics.add.image(200, 100, 'character');
     character.setSize(38, 78, true);
     paper = this.physics.add.image(400, 300, 'paper');
@@ -176,8 +183,12 @@ function createEnemy(physics) {
 }
 
 function hitEnemy() {
-    // disable controls and set player velocity to 0
-    dead = true;
-    // TODO play an explosion
-    // TODO when the explosion finishes, go to the outro screen
+    if (!dead) {
+        // disable controls and set player velocity to 0
+        dead = true;
+        // play an explosion
+        var boom = character.scene.add.sprite(character.x, character.y, 'boom').setScale(2);
+        boom.anims.play('explode');
+        // TODO when the explosion finishes, go to the outro screen
+    }
 }
