@@ -1,6 +1,4 @@
 var config = {
-    width: 800,
-    height: 600,
     physics: {
         default: 'arcade'
     },
@@ -8,7 +6,19 @@ var config = {
         preload: preload,
         create: create,
         update: update
-    }
+    },
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: 800,
+        height: 600,
+        parent: 'container',
+        max: {
+          width: 800,
+          height: 600
+        }
+    },
+    expandParent: false
 };
 
 var game = new Phaser.Game(config);
