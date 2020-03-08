@@ -26,16 +26,35 @@ const CHARACTER_SPEED=200;
 function preload () {
     this.load.image('character', 'character.png');
     this.load.image('paper', 'paper.png');
+    this.load.image('background', 'background.png');
+    this.load.image('shelf1', 'shelf1.png');
+    this.load.image('shelf2', 'shelf2.png');
+    this.load.image('shelf3', 'shelf3.png');
+    this.load.image('shelf4', 'shelf4.png');
+    this.load.image('shelf5', 'shelf5.png');
 }
 
 function create () {
     cursors = this.input.keyboard.createCursorKeys();
-    character = this.physics.add.image(400, 100, 'character');
+    this.add.image(400, 300, 'background').setScale(1.25);
+    var shelf1 = this.physics.add.image(400, 180, 'shelf1').setImmovable(true);
+    var shelf2 = this.physics.add.image(150, 180, 'shelf2').setImmovable(true);
+    var shelf3 = this.physics.add.image(600, 400, 'shelf3').setImmovable(true);
+    var shelf4 = this.physics.add.image(380, 420, 'shelf4').setImmovable(true);
+    var shelf5 = this.physics.add.image(160, 420, 'shelf5').setImmovable(true);
+    var shelf6 = this.physics.add.image(620, 200, 'shelf5').setImmovable(true);
+    character = this.physics.add.image(200, 100, 'character');
     character.setSize(38, 78, true);
     paper = this.physics.add.image(400, 300, 'paper');
     paper.setSize(70, 50, true);
     this.physics.add.overlap(character, paper, collectPaper, null, this);
-    scoreCounter = this.add.text(10, 10, 'Score: 0', { fontFamily: 'Arial', fontSize: 18, color: '#000000' });
+    this.physics.add.collider(character, shelf1);
+    this.physics.add.collider(character, shelf2);
+    this.physics.add.collider(character, shelf3);
+    this.physics.add.collider(character, shelf4);
+    this.physics.add.collider(character, shelf5);
+    this.physics.add.collider(character, shelf6);
+    scoreCounter = this.add.text(6, 3, 'Score: 0', { fontFamily: 'Arial', fontSize: 18, color: '#ffffff' });
 }
 
 function update() {
