@@ -111,7 +111,7 @@ function startGame(event) {
         character.visible = true;
         enemies_per_millisecond = 1/2000;
         placePaper();
-        character.setPosition(200, 100);
+        character.setPosition(400, 300);
         setScore(0);
     }
 }
