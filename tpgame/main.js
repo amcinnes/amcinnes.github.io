@@ -94,7 +94,7 @@ function create () {
             // Prepare the game
             dead = false;
             character.visible = true;
-            enemies_per_millisecond = 1/3000;
+            enemies_per_millisecond = 1/2000;
             placePaper();
             character.setPosition(200, 100);
             setScore(0);
@@ -204,23 +204,39 @@ function createEnemy(physics) {
     var image_name;
     var x;
     var y;
+    var size_x;
+    var size_y;
+    var offset_x;
+    var offset_y;
     if (r < 0.25) {
         type = 'left';
         image_name = 'enemy_l';
         x = 825;
         y = choose_y();
+        size_x = 61;
+        offset_x = 0;
+        size_y = 40;
+        offset_y = 38;
     } else if (r < 0.5) {
         type = 'right';
         image_name = 'enemy_r';
         x = -25;
         y = choose_y();
+        size_x = 61;
+        offset_x = 36;
+        size_y = 40;
+        offset_y = 38;
     } else {
         type = 'down';
         image_name = 'enemy_d';
         x = choose_x();
         y = -25;
+        size_x = 68;
+        offset_x = 2;
+        size_y = 51;
+        offset_y = 40;
     }
-    var obj = physics.add.image(x, y, image_name);
+    var obj = physics.add.image(x, y, image_name).setSize(size_x, size_y).setOffset(offset_x, offset_y);
     physics.add.overlap(character, obj, hitEnemy, null, null);
     enemies.push({
         age: 0,
