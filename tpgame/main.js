@@ -23,6 +23,7 @@ var config = {
 
 var game = new Phaser.Game(config);
 
+var intro;
 var running = false;
 var cursors;
 var character;
@@ -81,7 +82,7 @@ function create () {
         frames: this.anims.generateFrameNumbers('explosion', { start: 0, end: 23, first: 23 }),
         frameRate: 15
     });
-    character = this.physics.add.image(200, 100, 'character');
+    character = this.physics.add.image(400, 300, 'character');
     character.setSize(38, 78, true);
     paper = this.physics.add.image(400, 300, 'paper');
     paper.setSize(70, 50, true);
@@ -89,27 +90,30 @@ function create () {
     this.physics.add.collider(character, obstacles);
     scoreCounter = this.add.text(6, 3, '', { fontFamily: 'Arial', fontSize: 18, color: '#ffffff' });
 
-    var intro = this.add.image(400, 300, 'intro');
+    intro = this.add.image(400, 300, 'intro');
     outro = this.add.image(400, 300, 'outro');
     outro.visible = false;
     outroScoreCounter = this.add.text(275, 155, '0', { fontFamily: 'Arial', fontSize: 30, color: '#000000' });
     outroScoreCounter.visible = false;
 
-    this.input.keyboard.on('keydown_ENTER', function (event) {
-        if (!running) {
-            running = true;
-            intro.visible = false;
-            outro.visible = false;
-            outroScoreCounter.visible = false;
-            // Prepare the game
-            dead = false;
-            character.visible = true;
-            enemies_per_millisecond = 1/2000;
-            placePaper();
-            character.setPosition(200, 100);
-            setScore(0);
-        }
-    });
+    this.input.keyboard.on('keydown_ENTER', startGame);
+    this.input.on('pointerdown', startGame);
+}
+
+function startGame(event) {
+    if (!running) {
+        running = true;
+        intro.visible = false;
+        outro.visible = false;
+        outroScoreCounter.visible = false;
+        // Prepare the game
+        dead = false;
+        character.visible = true;
+        enemies_per_millisecond = 1/2000;
+        placePaper();
+        character.setPosition(200, 100);
+        setScore(0);
+    }
 }
 
 function update(time, delta) {
