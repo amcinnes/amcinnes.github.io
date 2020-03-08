@@ -25,6 +25,7 @@ var enemies = [];
 var enemies_per_millisecond = 0;
 
 const CHARACTER_SPEED=200;
+const ENEMY_SPEED=250;
 
 function preload () {
     this.load.image('character', 'character.png');
@@ -84,10 +85,32 @@ function update(time, delta) {
     }
     enemies_per_millisecond += 1e-8 * delta;
 
-    // For each enemy:
-    // Increment its age
-    // If it was created more than n steps ago, set its velocity appropriately
-    // If it has left the arena, remove it
+    var next_enemies = [];
+    for (var i=0; i<enemies.length; i++) {
+        enemies[i].age += delta;
+        if (enemies[i].age > 1000) {
+            // If it was created more than n steps ago, set its velocity appropriately
+            switch (enemies[i].type) {
+            case 'left':
+                enemies[i].obj.setVelocityX(-ENEMY_SPEED);
+                break;
+            case 'right':
+                enemies[i].obj.setVelocityX(ENEMY_SPEED);
+                break;
+            case 'down':
+                enemies[i].obj.setVelocityY(ENEMY_SPEED);
+                break;
+            }
+        }
+        // If it has left the arena, remove it
+        var o = enemies[i].obj;
+        if (o.x>900 || o.x<-100 || o.y>700) {
+            o.destroy();
+        } else {
+            next_enemies.push(enemies[i]);
+        }
+    }
+    enemies = next_enemies;
 }
 
 function choose_x() {
