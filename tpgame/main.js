@@ -32,6 +32,8 @@ function preload () {
     this.load.image('shelf3', 'shelf3.png');
     this.load.image('shelf4', 'shelf4.png');
     this.load.image('shelf5', 'shelf5.png');
+    this.load.image('hwall', 'hwall.png');
+    this.load.image('vwall', 'vwall.png');
 }
 
 function create () {
@@ -43,6 +45,10 @@ function create () {
     var shelf4 = this.physics.add.image(380, 420, 'shelf4').setImmovable(true);
     var shelf5 = this.physics.add.image(160, 420, 'shelf5').setImmovable(true);
     var shelf6 = this.physics.add.image(620, 200, 'shelf5').setImmovable(true);
+    var hwall1 = this.physics.add.image(400, 15, 'hwall').setImmovable(true);
+    var hwall2 = this.physics.add.image(400, 585, 'hwall').setImmovable(true);
+    var vwall1 = this.physics.add.image(15, 300, 'vwall').setImmovable(true);
+    var vwall2 = this.physics.add.image(785, 300, 'vwall').setImmovable(true);
     character = this.physics.add.image(200, 100, 'character');
     character.setSize(38, 78, true);
     paper = this.physics.add.image(400, 300, 'paper');
@@ -54,6 +60,10 @@ function create () {
     this.physics.add.collider(character, shelf4);
     this.physics.add.collider(character, shelf5);
     this.physics.add.collider(character, shelf6);
+    this.physics.add.collider(character, hwall1);
+    this.physics.add.collider(character, hwall2);
+    this.physics.add.collider(character, vwall1);
+    this.physics.add.collider(character, vwall2);
     scoreCounter = this.add.text(6, 3, 'Score: 0', { fontFamily: 'Arial', fontSize: 18, color: '#ffffff' });
 }
 
