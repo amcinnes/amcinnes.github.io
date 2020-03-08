@@ -21,6 +21,8 @@ var character;
 var scoreCounter;
 var score = 0;
 var obstacles;
+var enemies = [];
+var enemies_per_millisecond = 0;
 
 const CHARACTER_SPEED=200;
 
@@ -35,6 +37,9 @@ function preload () {
     this.load.image('shelf5', 'shelf5.png');
     this.load.image('hwall', 'hwall.png');
     this.load.image('vwall', 'vwall.png');
+    this.load.image('enemy_l', 'enemy_l.png');
+    this.load.image('enemy_r', 'enemy_r.png');
+    this.load.image('enemy_d', 'enemy_d.png');
 }
 
 function create () {
@@ -60,7 +65,7 @@ function create () {
     scoreCounter = this.add.text(6, 3, 'Score: 0', { fontFamily: 'Arial', fontSize: 18, color: '#ffffff' });
 }
 
-function update() {
+function update(time, delta) {
     character.setVelocity(0);
     if (cursors.left.isDown) {
         character.setVelocityX(-CHARACTER_SPEED);
@@ -72,6 +77,27 @@ function update() {
     } else if (cursors.down.isDown) {
         character.setVelocityY(CHARACTER_SPEED);
     }
+
+    // Create enemies at a gradually increasing rate
+    if (Math.random() < enemies_per_millisecond * delta) {
+        createEnemy(this.physics);
+    }
+    enemies_per_millisecond += 1e-8 * delta;
+
+    // For each enemy:
+    // Increment its age
+    // If it was created more than n steps ago, set its velocity appropriately
+    // If it has left the arena, remove it
+}
+
+function choose_x() {
+    var choices = [65, 280, 510, 725];
+    return choices[Math.floor(Math.random()*choices.length)];
+}
+
+function choose_y() {
+    var choices = [80, 305, 515];
+    return choices[Math.floor(Math.random()*choices.length)];
 }
 
 function collectPaper(player, paper) {
@@ -79,17 +105,44 @@ function collectPaper(player, paper) {
     // I'd be happy to just create it in any random location that doesn't overlap with obstacles
     // but can't figure out how to do that easily
     if (Math.random() >= 0.5) {
-        var xChoices = [65, 280, 510, 725];
-        var x = xChoices[Math.floor(Math.random()*xChoices.length)];
+        var x = choose_x();
         var y = Math.random() * (560-40) + 40;
         paper.setPosition(x, y);
     } else {
-        var yChoices = [80, 305, 515];
         var x = Math.random() * (760-40) + 40;
-        var y = yChoices[Math.floor(Math.random()*yChoices.length)];
+        var y = choose_y();
         paper.setPosition(x, y);
     }
     // increment score
     score++;
     scoreCounter.setText('Score: ' + score);
+}
+
+function createEnemy(physics) {
+    var r = Math.random();
+    var type;
+    var image_name;
+    var x;
+    var y;
+    if (r < 0.25) {
+        type = 'left';
+        image_name = 'enemy_l';
+        x = 825;
+        y = choose_y();
+    } else if (r < 0.5) {
+        type = 'right';
+        image_name = 'enemy_r';
+        x = -25;
+        y = choose_y();
+    } else {
+        type = 'down';
+        image_name = 'enemy_d';
+        x = choose_x();
+        y = -25;
+    }
+    enemies.push({
+        age: 0,
+        type: type,
+        obj: physics.add.image(x, y, image_name)
+    });
 }
