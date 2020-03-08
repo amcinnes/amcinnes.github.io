@@ -2,20 +2,18 @@ var config = {
     width: 800,
     height: 600,
     physics: {
-        default: 'arcade',
-        arcade: {
-        }
+        default: 'arcade'
     },
     scene: {
         preload: preload,
         create: create,
         update: update
-    },
-    backgroundColor: 0xffffff
+    }
 };
 
 var game = new Phaser.Game(config);
 
+var running = false;
 var cursors;
 var character;
 var scoreCounter;
@@ -32,6 +30,8 @@ function preload () {
     this.load.image('character', 'character.png');
     this.load.image('paper', 'paper.png');
     this.load.image('background', 'background.png');
+    this.load.image('intro', 'intro.png');
+    this.load.image('outro', 'outro.png');
     this.load.image('shelf1', 'shelf1.png');
     this.load.image('shelf2', 'shelf2.png');
     this.load.image('shelf3', 'shelf3.png');
@@ -72,55 +72,91 @@ function create () {
     this.physics.add.overlap(character, paper, collectPaper, null, this);
     this.physics.add.collider(character, obstacles);
     scoreCounter = this.add.text(6, 3, 'Score: 0', { fontFamily: 'Arial', fontSize: 18, color: '#ffffff' });
+
+    var intro = this.add.image(400, 300, 'intro');
+    outro = this.add.image(400, 300, 'outro');
+    outro.visible = false;
+
+    this.input.keyboard.on('keydown', function (event) {
+        if (!running) {
+            running = true;
+            intro.visible = false;
+            outro.visible = false;
+            // Prepare the game
+            dead = false;
+            character.visible = true;
+            enemies_per_millisecond = 0;
+            placePaper();
+            character.setPosition(200, 100);
+            score = 0;
+            scoreCounter.setText('Score: ' + score);
+        }
+    });
 }
 
 function update(time, delta) {
     character.setVelocity(0);
-    if (!dead) {
-        if (cursors.left.isDown) {
-            character.setVelocityX(-CHARACTER_SPEED);
-        } else if (cursors.right.isDown) {
-            character.setVelocityX(CHARACTER_SPEED);
-        }
-        if (cursors.up.isDown) {
-            character.setVelocityY(-CHARACTER_SPEED);
-        } else if (cursors.down.isDown) {
-            character.setVelocityY(CHARACTER_SPEED);
-        }
-    }
+    if (running) {
+        if (dead) {
+            deadTime += delta;
+            if (deadTime > 3000) {
+                // after the explosion finishes
+                running = false;
+                outro.visible = true;
+                // delete all the enemies
+                for (var i=0; i<enemies.length; i++) {
+                    enemies[i].obj.destroy();
+                }
+                enemies = [];
 
-    // Create enemies at a gradually increasing rate
-    if (Math.random() < enemies_per_millisecond * delta) {
-        createEnemy(this.physics);
-    }
-    enemies_per_millisecond += 1e-8 * delta;
-
-    var next_enemies = [];
-    for (var i=0; i<enemies.length; i++) {
-        enemies[i].age += delta;
-        if (enemies[i].age > 1000) {
-            // If it was created more than n steps ago, set its velocity appropriately
-            switch (enemies[i].type) {
-            case 'left':
-                enemies[i].obj.setVelocityX(-ENEMY_SPEED);
-                break;
-            case 'right':
-                enemies[i].obj.setVelocityX(ENEMY_SPEED);
-                break;
-            case 'down':
-                enemies[i].obj.setVelocityY(ENEMY_SPEED);
-                break;
+            }
+        } else  {
+            if (cursors.left.isDown) {
+                character.setVelocityX(-CHARACTER_SPEED);
+            } else if (cursors.right.isDown) {
+                character.setVelocityX(CHARACTER_SPEED);
+            }
+            if (cursors.up.isDown) {
+                character.setVelocityY(-CHARACTER_SPEED);
+            } else if (cursors.down.isDown) {
+                character.setVelocityY(CHARACTER_SPEED);
             }
         }
-        // If it has left the arena, remove it
-        var o = enemies[i].obj;
-        if (o.x>900 || o.x<-100 || o.y>700) {
-            o.destroy();
-        } else {
-            next_enemies.push(enemies[i]);
-        }
     }
-    enemies = next_enemies;
+    if (running) {
+        // Create enemies at a gradually increasing rate
+        if (Math.random() < enemies_per_millisecond * delta) {
+            createEnemy(this.physics);
+        }
+        enemies_per_millisecond += 1e-8 * delta;
+
+        var next_enemies = [];
+        for (var i=0; i<enemies.length; i++) {
+            enemies[i].age += delta;
+            if (enemies[i].age > 1000) {
+                // If it was created more than n steps ago, set its velocity appropriately
+                switch (enemies[i].type) {
+                case 'left':
+                    enemies[i].obj.setVelocityX(-ENEMY_SPEED);
+                    break;
+                case 'right':
+                    enemies[i].obj.setVelocityX(ENEMY_SPEED);
+                    break;
+                case 'down':
+                    enemies[i].obj.setVelocityY(ENEMY_SPEED);
+                    break;
+                }
+            }
+            // If it has left the arena, remove it
+            var o = enemies[i].obj;
+            if (o.x>900 || o.x<-100 || o.y>700) {
+                o.destroy();
+            } else {
+                next_enemies.push(enemies[i]);
+            }
+        }
+        enemies = next_enemies;
+    }
 }
 
 function choose_x() {
@@ -134,6 +170,12 @@ function choose_y() {
 }
 
 function collectPaper(player, paper) {
+    placePaper();
+    score++;
+    scoreCounter.setText('Score: ' + score);
+}
+
+function placePaper() {
     // Put paper on one of these lines that doesn't overlap with obstacles
     // I'd be happy to just create it in any random location that doesn't overlap with obstacles
     // but can't figure out how to do that easily
@@ -146,9 +188,6 @@ function collectPaper(player, paper) {
         var y = choose_y();
         paper.setPosition(x, y);
     }
-    // increment score
-    score++;
-    scoreCounter.setText('Score: ' + score);
 }
 
 function createEnemy(physics) {
@@ -186,9 +225,10 @@ function hitEnemy() {
     if (!dead) {
         // disable controls and set player velocity to 0
         dead = true;
+        deadTime = 0;
+        character.visible = false;
         // play an explosion
         var boom = character.scene.add.sprite(character.x, character.y, 'boom').setScale(2);
         boom.anims.play('explode');
-        // TODO when the explosion finishes, go to the outro screen
     }
 }
