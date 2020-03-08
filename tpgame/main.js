@@ -22,7 +22,8 @@ var scoreCounter;
 var score = 0;
 var obstacles;
 var enemies = [];
-var enemies_per_millisecond = 0;
+var enemies_per_millisecond = 1/5000;
+var dead = false;
 
 const CHARACTER_SPEED=200;
 const ENEMY_SPEED=250;
@@ -68,15 +69,17 @@ function create () {
 
 function update(time, delta) {
     character.setVelocity(0);
-    if (cursors.left.isDown) {
-        character.setVelocityX(-CHARACTER_SPEED);
-    } else if (cursors.right.isDown) {
-        character.setVelocityX(CHARACTER_SPEED);
-    }
-    if (cursors.up.isDown) {
-        character.setVelocityY(-CHARACTER_SPEED);
-    } else if (cursors.down.isDown) {
-        character.setVelocityY(CHARACTER_SPEED);
+    if (!dead) {
+        if (cursors.left.isDown) {
+            character.setVelocityX(-CHARACTER_SPEED);
+        } else if (cursors.right.isDown) {
+            character.setVelocityX(CHARACTER_SPEED);
+        }
+        if (cursors.up.isDown) {
+            character.setVelocityY(-CHARACTER_SPEED);
+        } else if (cursors.down.isDown) {
+            character.setVelocityY(CHARACTER_SPEED);
+        }
     }
 
     // Create enemies at a gradually increasing rate
@@ -163,9 +166,18 @@ function createEnemy(physics) {
         x = choose_x();
         y = -25;
     }
+    var obj = physics.add.image(x, y, image_name);
+    physics.add.overlap(character, obj, hitEnemy, null, null);
     enemies.push({
         age: 0,
         type: type,
-        obj: physics.add.image(x, y, image_name)
+        obj: obj
     });
+}
+
+function hitEnemy() {
+    // disable controls and set player velocity to 0
+    dead = true;
+    // TODO play an explosion
+    // TODO when the explosion finishes, go to the outro screen
 }
